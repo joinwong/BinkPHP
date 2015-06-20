@@ -9,10 +9,14 @@ class BinkPHP {
 		set_error_handler('Bink\BinkPHP::appError');
 		set_exception_handler('Bink\BinkPHP::appException');
 
-		echo $_SERVER['PATH_INFO'];
+		//函数
+		require(CONF_PATH.'/functions.php');
 
 		//加载一系列默认配置和文件
-		$c = new Controllers();
+
+
+		$controller = new Controller();
+		$controller->run();
 
 	}
 
