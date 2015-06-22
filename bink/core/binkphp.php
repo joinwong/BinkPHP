@@ -16,7 +16,7 @@ class BinkPHP {
 
 
 		$controller = new Controller();
-		$controller->run();
+		$controller->execute();
 
 	}
 

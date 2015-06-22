@@ -17,6 +17,9 @@ defined('APP_VIEWS_PATH') or define('APP_VIEW_PATH', APP_PATH.'/view');
 defined('EXT_NAME') or define('EXT_NAME','.php');
 defined('VIEW_EXT_NAME') or define('VIEW_EXT_NAME','.views.php');
 
+if(extension_loaded('mbstring'))
+	defined('ENABLE_MB') or define('ENABLE_MB',TRUE);
+
 //核心类
 require CORE_PATH.'/binkphp'.EXT_NAME;
 

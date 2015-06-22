@@ -13,7 +13,7 @@ class Loader extends Base{
 	 * @return [type]
 	 */
 	public function view($_view_path,$_data,$_contentType='text/html',$_cacheTime='',$_charset='utf-8'){
-		header('Content-Type:'.$_contentType.';charset:'.$_charset);
+		header('Content-Type:'.$_contentType.';charset='.$_charset);
 		header('X-Power-By:BinkPHP');
 
 		extract( $_data);
@@ -24,6 +24,5 @@ class Loader extends Base{
 			self::$view_map[$_view_path] = APP_VIEW_PATH.DIRECTORY_SEPARATOR.$_view_path.VIEW_EXT_NAME;
 			require self::$view_map[$_view_path];
 		}
-
 	}
 }

@@ -9,7 +9,7 @@ class Controller extends Base{
 	private $_param;
 
 	public function __construct(){
-		$route = getPathInfo();
+		$route = $this->getPathInfo();
 		if(isset($route)){
 			$this->_controller = $route['_controller'];
 			$this->_function = $route['_function'];
@@ -21,13 +21,46 @@ class Controller extends Base{
 	}
 
 	/**
+	 * 解析url
+	 * @param  string
 	 * @return [type]
 	 */
-	public function run(){
-		$_file_path = APP_CONTROLLER_PATH.DIRECTORY_SEPARATOR.$this->_controller.EXT_NAME;
-		if(is_file($_file_path)){
-			require $_file_path;
+	private function getPathInfo($pathinfo = ''){
+		$pathinfo = $pathinfo !='' ?: $_SERVER['PATH_INFO'];
+		if(isset($pathinfo)){
+			$pathinfo = ltrim($pathinfo,'/');
+			$arr = explode('/', $pathinfo);
+			
+			$tmp = array_splice($arr, 0 ,2);
+			list($_controller,$_function) = $tmp;
+			unset($tmp);
+
+			for($i=0,$len=count($arr);$i<$len;$i+=2){
+				$param[$arr[$i]] = $arr[$i+1];
+			}
+
+			$param = array_merge($param,$_REQUEST);
+
+			return array(
+				'_controller' =>ucfirst( $_controller),
+				'_function' => $_function,
+				'_param' => $param
+			);
+		}else{
+			return array(
+				'_controller' =>ucfirst( Config::getConfig('default_controller')),
+				'_function' => Config::getConfig('default_index'),
+				'_param' => ''
+			);
 		}
+	}
+
+	/**
+	 * @return [type]
+	 */
+	public function execute(){
+		$_file_path = APP_CONTROLLER_PATH.DIRECTORY_SEPARATOR.$this->_controller.EXT_NAME;
+		load($_file_path);
 
 
 		try{
@@ -47,6 +80,11 @@ class Controller extends Base{
 
 	}
 
+	/**
+	 * @param  [type]
+	 * @param  [type]
+	 * @return [type]
+	 */
 	public function display($_viewpath,$_data){
 		$this->loader->view($_viewpath,$_data);
 	}
