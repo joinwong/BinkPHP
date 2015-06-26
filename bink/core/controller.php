@@ -6,14 +6,14 @@ class Controller extends Base{
 
 	private $_controller;
 	private $_function;
-	private $_param;
+	private $_request;
 
 	public function __construct(){
-		$route = $this->getPathInfo();
-		if(isset($route)){
-			$this->_controller = $route['_controller'];
-			$this->_function = $route['_function'];
-			$this->_param = $route['_param'];
+		$_route = $this->_getPathInfo();
+		if(isset($_route)){
+			$this->_controller = $_route['_controller'];
+			$this->_function = $_route['_function'];
+			$this->_request = $_route['_request'];
 		}
 
 		//模板加载器
@@ -25,8 +25,8 @@ class Controller extends Base{
 	 * @param  string
 	 * @return [type]
 	 */
-	private function getPathInfo($pathinfo = ''){
-		$pathinfo = $pathinfo !='' ?: $_SERVER['PATH_INFO'];
+	private function _getPathInfo($pathinfo = ''){
+		$pathinfo = $pathinfo !='' ?: (isset($_SERVER['PATH_INFO'])?:$_SERVER['PATH_INFO']);
 		if(isset($pathinfo)){
 			$pathinfo = ltrim($pathinfo,'/');
 			$arr = explode('/', $pathinfo);
@@ -36,21 +36,19 @@ class Controller extends Base{
 			unset($tmp);
 
 			for($i=0,$len=count($arr);$i<$len;$i+=2){
-				$param[$arr[$i]] = $arr[$i+1];
+				$_GET[$arr[$i]] = $arr[$i+1];
 			}
-
-			$param = array_merge($param,$_REQUEST);
 
 			return array(
 				'_controller' =>ucfirst( $_controller),
 				'_function' => $_function,
-				'_param' => $param
+				'_request' => $_REQUEST
 			);
 		}else{
 			return array(
-				'_controller' =>ucfirst( Config::getConfig('default_controller')),
-				'_function' => Config::getConfig('default_index'),
-				'_param' => ''
+				'_controller' =>ucfirst(C('default_controller')),
+				'_function' => C('default_index'),
+				'_request' => ''
 			);
 		}
 	}
@@ -60,16 +58,15 @@ class Controller extends Base{
 	 */
 	public function execute(){
 		$_file_path = APP_CONTROLLER_PATH.DIRECTORY_SEPARATOR.$this->_controller.EXT_NAME;
-		load($_file_path);
-
+		L($_file_path);
 
 		try{
 			$method =   new \ReflectionMethod($this->_controller, $this->_function);
 
 			if($method->isPublic() && !$method->isStatic()){
 				$_class = new \ReflectionClass($this->_controller);
-				if(isset($this->_param) && count($this->_param) > 0){
-					$method->invokeArgs(new $this->_controller,array($_param));
+				if(isset($this->_request) && count($this->_request) > 0){
+					$method->invokeArgs(new $this->_controller,array($this->_request));
 				}else{
 					$method->invoke(new $this->_controller);
 				}
@@ -80,13 +77,17 @@ class Controller extends Base{
 
 	}
 
+
 	/**
 	 * @param  [type]
 	 * @param  [type]
+	 * @param  string
+	 * @param  string
+	 * @param  string
 	 * @return [type]
 	 */
-	public function display($_viewpath,$_data){
-		$this->loader->view($_viewpath,$_data);
+	public function display($_viewpath,$_data,$_contentType='text/html',$_cacheTime='',$_charset='utf-8'){
+		$this->loader->view($_viewpath,$_data,$_contentType,$_cacheTime,$_charset);
 	}
 
 }

@@ -5,8 +5,8 @@ class Hello extends Bink\Controller{
 	public function index(){
 		$data['title'] = "我来自hello controller";		
 		$data['content'] = '我很好，你呢？';
-		$str =  "china中国";
-		echo getstrlen($str);
+
+
 		$this->display('hello',$data);
 	}
 

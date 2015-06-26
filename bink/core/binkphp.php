@@ -13,7 +13,12 @@ class BinkPHP {
 		require(CONF_PATH.'/functions.php');
 
 		//加载一系列默认配置和文件
-
+		//$log = new Log;
+		//$log->info('__1');
+		Log::getInstance()->warn('warn');
+		//Model::getInstance()->warn('warn');
+		//var_dump(Log::getInstance()->warn('warn'));
+		//Log::info('warn');
 
 		$controller = new Controller();
 		$controller->execute();
@@ -49,6 +54,7 @@ class BinkPHP {
 	 * @return [type]
 	 */
 	static function appError($errno, $errstr, $errfile, $errline){
+		echo $errfile,':',$errline.':',$errstr,PHP_EOL;
 		return 0;
 	}
 
